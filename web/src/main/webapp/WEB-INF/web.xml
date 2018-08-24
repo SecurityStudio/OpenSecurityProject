@@ -3,4 +3,38 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
+
+    <display-name>Shiro Tutorial</display-name>
+
+    <!-- JSF mapping -->
+    <servlet>
+        <servlet-name>facesContext</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!-- Map these files with JSF -->
+    <servlet-mapping>
+        <servlet-name>facesContext</servlet-name>
+        <url-pattern>/faces/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>facesContext</servlet-name>
+        <url-pattern>*.jsf</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>facesContext</servlet-name>
+        <url-pattern>*.faces</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>facesContext</servlet-name>
+        <url-pattern>*.xhtml</url-pattern>
+    </servlet-mapping>
+
+    <session-config>
+        <session-timeout>300</session-timeout>
+    </session-config>
 </web-app>
