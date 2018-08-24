@@ -50,13 +50,49 @@
                             <directory>src/main/webapp/WEB-INF</directory>
                             <targetPath>WEB-INF</targetPath>
                         </resource>
-                        <resource>
-                            <directory>src/main/resources/META-INF</directory>
-                            <filtering>true</filtering>
-                            <targetPath>META-INF</targetPath>
-                        </resource>
+                        <!--<resource>-->
+                            <!--<directory>src/main/resources/META-INF</directory>-->
+                            <!--<filtering>true</filtering>-->
+                            <!--<targetPath>META-INF</targetPath>-->
+                        <!--</resource>-->
                     </webResources>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <version>1.0.2.Final</version>
+
+                <!--
+                <configuration>
+                    <hostname>172.20.35.178</hostname>
+                    <port>9990</port>
+                    <username>Hossein</username>
+                    <password>148941</password>
+                </configuration>
+                -->
+
+                <executions>
+                    <execution>
+                        <id>undeploy</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>undeploy</goal>
+                        </goals>
+                        <configuration>
+                            <ignoreMissingDeployment>true</ignoreMissingDeployment>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>deploy</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
