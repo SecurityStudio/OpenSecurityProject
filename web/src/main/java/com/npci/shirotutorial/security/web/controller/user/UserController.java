@@ -52,11 +52,19 @@ public class UserController implements Serializable {
     }
 
     public void save() {
-        service.save(user);
-        String message = "User {0} added successfully";
-        FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(new MessageFormat(message).format(new Object[]{user.getId()}))
-        );
+        try {
+            service.save(user);
+            String message = "User {0} added successfully";
+
+            FacesContext.getCurrentInstance().getExternalContext().getFlash().setKeepMessages(true);
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(new MessageFormat(message).format(new Object[]{user.getId()}))
+            );
+            FacesContext.getCurrentInstance().getExternalContext().redirect("index.xhtml");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // return "index?faces-redirect=true";
     }
 
     public void edit() {
