@@ -2,18 +2,23 @@ package com.npci.shirotutorial.security.service;
 
 import com.npci.shirotutorial.security.model.entity.User;
 import com.npci.shirotutorial.security.service.exception.InvalidIdException;
+import org.slf4j.Logger;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.PersistenceContext;
+import javax.persistence.NoResultException;
 import java.util.List;
 
 @Stateless
 public class UserService {
 
-    @PersistenceContext
+    @Inject
     EntityManager em;
+
+    @Inject
+    private Logger logger;
 
     public void save(User user) {
         em.persist(user);
@@ -45,6 +50,18 @@ public class UserService {
 
     public User find(Long id) {
         return em.find(User.class, id);
+    }
+
+    public User findByUsername(String username) {
+        User result = null;
+        try {
+            result = this.em.createNamedQuery(User.FIND_BY_USERNAME, User.class)
+                    .setParameter("username", username).getSingleResult();
+        } catch (NoResultException e) {
+            logger.info("UserService : No valid User was found for [" + username + "] : " + e);
+        } finally {
+            return result;
+        }
     }
 
     public List<User> findAll() {
