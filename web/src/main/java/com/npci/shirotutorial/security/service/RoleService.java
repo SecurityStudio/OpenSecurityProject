@@ -3,6 +3,7 @@ package com.npci.shirotutorial.security.service;
 import com.npci.shirotutorial.security.model.entity.Role;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
@@ -11,7 +12,7 @@ import java.util.List;
 @Stateless
 public class RoleService {
 
-    @PersistenceContext
+    @Inject
     EntityManager em;
 
     public void save(Role role) {
