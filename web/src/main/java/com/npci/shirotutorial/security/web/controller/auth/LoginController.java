@@ -1,15 +1,20 @@
 package com.npci.shirotutorial.security.web.controller.auth;
 
+import com.npci.shirotutorial.security.util.ResourceMgr;
+import com.npci.shirotutorial.security.web.security.WebPages;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
 
-import javax.faces.view.ViewScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import java.io.Serializable;
 
 @Named
-@ViewScoped
+@RequestScoped
 public class LoginController implements Serializable {
     private static final long serialVersionUID = -9111779500857948131L;
 
@@ -46,12 +51,41 @@ public class LoginController implements Serializable {
 
         // Yani user login taze darad login mikonad
         // agar login bashad va be safheye login biayad in meghdar false ast
-        boolean justLogged = !SecurityUtils.getSubject().isAuthenticated();
+        Subject currentUser = SecurityUtils.getSubject();
+        boolean justLogged = !currentUser.isAuthenticated();
 
         try {
-            SecurityUtils.getSubject().login(new UsernamePasswordToken(username, password, rememberMe));
+            UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+            token.setRememberMe(rememberMe);
+
+            currentUser.login(token);
+            ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+            ec.redirect(ec.getRequestContextPath() + WebPages.HOME_URL);
+            // return "/index?faces-redirect=true";
+
         } catch (Exception e) {
-            throw new IncorrectCredentialsException("Unknown user, please try again");
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), ""));
+            // throw new IncorrectCredentialsException("Unknown user, please try again");
         }
+
+        // return null;
+    }
+
+    public void logout() {
+        Subject currentUser = SecurityUtils.getSubject();
+        if (currentUser.isAuthenticated()) {
+            SecurityUtils.getSubject().logout();
+            String logoutMessage = ResourceMgr.getMessageBundle().getString("logout.message");
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, logoutMessage, ""));
+        }
+    }
+
+    public Subject getCurrentUser() {
+        return SecurityUtils.getSubject();
+    }
+
+    public boolean isAuthenticated() {
+        return getCurrentUser().isAuthenticated();
     }
 }

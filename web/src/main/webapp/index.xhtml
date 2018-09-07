@@ -6,6 +6,13 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 <f:view>
-    <h:outputLabel value="Index"/>
+    <h:messages id="messages"></h:messages>
+
+    <h3>Index</h3>
+    <h:form>
+        <h:commandButton value="#{lbl.logout}" action="#{loginController.logout}">
+            <f:ajax render="messages" execute="@form"/>
+        </h:commandButton>
+    </h:form>
 </f:view>
 </html>
