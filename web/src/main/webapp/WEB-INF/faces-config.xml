@@ -3,23 +3,27 @@
               xmlns="http://xmlns.jcp.org/xml/ns/javaee"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
-<application>
-    <resource-bundle>
-        <base-name>com.npci.shirotutorial.security.web.i18n.messages</base-name>
-        <var>msg</var>
-    </resource-bundle>
+    <application>
+        <resource-bundle>
+            <base-name>com.npci.shirotutorial.security.web.i18n.messages</base-name>
+            <var>msg</var>
+        </resource-bundle>
 
-    <resource-bundle>
-        <base-name>com.npci.shirotutorial.security.web.i18n.labels</base-name>
-        <var>lbl</var>
-    </resource-bundle>
+        <resource-bundle>
+            <base-name>com.npci.shirotutorial.security.web.i18n.labels</base-name>
+            <var>lbl</var>
+        </resource-bundle>
 
-    <message-bundle>com.npci.shirotutorial.security.web.i18n.validations</message-bundle>
+        <message-bundle>com.npci.shirotutorial.security.web.i18n.validations</message-bundle>
 
-    <locale-config>
-        <!--<default-locale>fa_IR</default-locale>-->
-        <supported-locale>fa_IR</supported-locale>
-        <supported-locale>en_US</supported-locale>
-    </locale-config>
-</application>
+        <locale-config>
+            <!--<default-locale>fa_IR</default-locale>-->
+            <supported-locale>fa_IR</supported-locale>
+            <supported-locale>en_US</supported-locale>
+        </locale-config>
+    </application>
+
+    <lifecycle>
+        <phase-listener>com.npci.shirotutorial.security.web.listener.DebugPhaseListener</phase-listener>
+    </lifecycle>
 </faces-config>
