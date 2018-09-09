@@ -1,22 +1,32 @@
 package com.npci.shirotutorial.security.web.controller.auth;
 
 import com.npci.shirotutorial.security.util.ResourceMgr;
-import com.npci.shirotutorial.security.web.security.WebPages;
+import com.npci.shirotutorial.security.web.HttpBasic;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.web.util.SavedRequest;
+import org.slf4j.Logger;
 
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
+import java.text.MessageFormat;
 
 @Named
 @RequestScoped
-public class LoginController implements Serializable {
+public class LoginController extends HttpBasic implements Serializable {
     private static final long serialVersionUID = -9111779500857948131L;
+
+    public static final String SAVED_REQUEST_KEY = "shiroSavedRequest";
+
+    @Inject
+    Logger logger;
 
     private String username;
     private String password;
@@ -47,21 +57,34 @@ public class LoginController implements Serializable {
         this.rememberMe = rememberMe;
     }
 
-    public void login() {
+    public String login() {
 
         // Yani user login taze darad login mikonad
         // agar login bashad va be safheye login biayad in meghdar false ast
         Subject currentUser = SecurityUtils.getSubject();
         boolean justLogged = !currentUser.isAuthenticated();
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
 
         try {
             UsernamePasswordToken token = new UsernamePasswordToken(username, password);
             token.setRememberMe(rememberMe);
 
+            logger.info("Login started");
             currentUser.login(token);
-            ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
-            ec.redirect(ec.getRequestContextPath() + WebPages.HOME_URL);
-            // return "/index?faces-redirect=true";
+
+            MessageFormat message = new MessageFormat("User {0} logged in successfully");
+            logger.info(message.format(new Object[]{token.getUsername()}));
+
+            SavedRequest savedRequest = getSavedRequest();
+
+            if (savedRequest != null) {
+                logger.info("Redirecting to saved request (URI): " + savedRequest.getRequestURI());
+                logger.info("Redirecting to saved request (URL): " + savedRequest.getRequestUrl());
+                ec.redirect(savedRequest.getRequestURI());
+            }
+
+            // ec.redirect(ec.getRequestContextPath() + WebPages.HOME_URL);
+            return "/index?faces-redirect=true";
 
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null,
@@ -69,7 +92,24 @@ public class LoginController implements Serializable {
             // throw new IncorrectCredentialsException("Unknown user, please try again");
         }
 
-        // return null;
+        return "/login?faces-redirect=true";
+    }
+
+    private SavedRequest getSavedRequest() {
+        SavedRequest savedRequest = null;
+
+        Subject currentUser = SecurityUtils.getSubject();
+
+        Session session = currentUser.getSession(false);
+        if (session != null) {
+            savedRequest = (SavedRequest) session.getAttribute(SAVED_REQUEST_KEY);
+        }
+
+        if (savedRequest != null) {
+            currentUser.getSession().removeAttribute(SAVED_REQUEST_KEY);
+        }
+
+        return savedRequest;
     }
 
     public void logout() {
